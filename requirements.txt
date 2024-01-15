@@ -4,3 +4,4 @@ gradio
 llama_index
 bitsandbytes
 accelerate
+transformers
