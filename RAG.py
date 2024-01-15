@@ -40,7 +40,7 @@ iface = gr.Interface(
     inputs=gr.Textbox(),
     outputs=gr.Textbox(),
     live=False,
-    title="CodeLlama Chatbot",
+    title="CNVRG CLI2 Chatbot",
     description="Enter your coding-related query to get responses!",
 )
 
