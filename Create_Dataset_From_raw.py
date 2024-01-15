@@ -3,6 +3,14 @@ from tika import parser
 from wcmatch import wcmatch
 import os
 from tqdm import tqdm
+import argparse
+
+
+parser = argparse.ArgumentParser(description="A script to extract data from .md files and prepare it as a txt file for embedding(aka. RAG).")
+parser.add_argument("--folder_path", type=str, help="Folder Path for the files to change")
+parser.add_argument("--folder_destination",default = "", type=str, help="output folder of the files")
+parser.add_argument("--dataset_name",default = "cnvrg_embedding_dataset.txt", type=str, help="created Dataset name .txt")
+args = parser.parse_args()
 
 # Create function to extract the data
 def extract_data(file_path):
@@ -54,11 +62,11 @@ def analyse_path(folder_path, file_ext, folder_destination):
     
 # Create required variables
 # Read from the following path
-folder_path = "/cnvrg/dataset_creating/"
+folder_path = args.folder_path
 #Only process the following file formats
 file_ext = "*.doc|*.docx|*.xlsx|*.xls|*.pdf|*.txt|*.ppt|*.pptx|*.md"
 # Save to the following path
-folder_destination = ""
+folder_destination = args.folder_destination
 
 # Run the extraction program
 analyse_path(folder_path, file_ext, folder_destination)
@@ -137,12 +145,12 @@ def create_dataset(folder_path, file_ext, folder_destination, dataset_name="data
     
     
 # Read from the following path
-folder_path = "/cnvrg/dataset_creating/"
+folder_path = args.folder_path
 #Only process the following file formats
 file_ext = "*.txt"
 # Save to the following path
-folder_destination = ""
+folder_destination = args.folder_destination
 # Dataset name (can be omitted to use default values)
-dataset_name="custom-llama2-dataset.txt"
+dataset_name=args.dataset_name
 
 create_dataset(folder_path, file_ext, folder_destination, dataset_name)
