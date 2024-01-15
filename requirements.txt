@@ -1,2 +1,6 @@
 tika
 wcmatch
+gradio
+llama_index
+bitsandbytes
+accelerate
