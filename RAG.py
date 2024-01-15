@@ -6,12 +6,20 @@ from llama_index.prompts import PromptTemplate
 from llama_index.llms import HuggingFaceLLM
 from llama_index import ServiceContext
 from llama_index import VectorStoreIndex
+import argparse
+
+
+parser = argparse.ArgumentParser(description="A script to embedd text to llm model.")
+parser.add_argument("--data_directory", type=str, help="Folder Path for the text data files")
+parser.add_argument("--model_name",default = "codellama/CodeLlama-7b-Instruct-hf", type=str, help="Model to Be used")
+parser.add_argument("--tokenizer_name",default = "codellama/CodeLlama-7b-Instruct-hf", type=str, help="Tokenizer To Be Used")
+parser.add_argument("--embed_model",default = "local:BAAI/bge-small-en-v1.5", type=str, help="Model That will perform the embedding")
 
 # Define the conversation_history outside the function for persistence
 conversation_history = []
 
 # Load documents and create the model, vector index, and query engine
-documents = SimpleDirectoryReader('/cnvrg/dataset_creating/').load_data()
+documents = SimpleDirectoryReader(args.data_directory).load_data()
 quantization_config = BitsAndBytesConfig(
     load_in_4bit=True,
     bnb_4bit_compute_dtype=torch.float16,
@@ -20,15 +28,15 @@ quantization_config = BitsAndBytesConfig(
 )
 
 llm = HuggingFaceLLM(
-    model_name="codellama/CodeLlama-7b-Instruct-hf",
-    tokenizer_name="codellama/CodeLlama-7b-Instruct-hf",
+    model_name=args.model_name,
+    tokenizer_name=args,tokenizer_name,
     query_wrapper_prompt=PromptTemplate("<s> [INST] {query_str} [/INST] "),
     context_window=3900,
     model_kwargs={"quantization_config": quantization_config},
     device_map="auto",
 )
 
-service_context = ServiceContext.from_defaults(llm=llm, embed_model="local:BAAI/bge-small-en-v1.5")
+service_context = ServiceContext.from_defaults(llm=llm, embed_model=args.embed_model)
 vector_index = VectorStoreIndex.from_documents(documents, service_context=service_context)
 query_engine = vector_index.as_query_engine(response_mode="compact")
 
