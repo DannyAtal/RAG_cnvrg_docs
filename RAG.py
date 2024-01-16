@@ -30,16 +30,29 @@ service_context = ServiceContext.from_defaults(llm=llm, embed_model="local:BAAI/
 vector_index = VectorStoreIndex.from_documents(documents, service_context=service_context)
 query_engine = vector_index.as_query_engine(response_mode="compact")
 
-def get_model_response(query):
+def get_model_response(message, history):
     # Use the pre-loaded model for queries
-    response = query_engine.query(query)
-    return response
+    response = query_engine.query(message)
 
-iface = gr.Interface(
+    # Check if the response is a string or can be converted to a string
+    if isinstance(response, str):
+        first_line_response = response.split('\n')[0]
+    else:
+        # If the response is not a string, attempt to convert it to a string
+        try:
+            response_str = str(response)
+            first_line_response = response_str.split('\n')[0]
+        except Exception as e:
+            # If unable to convert to string, handle the error accordingly
+            first_line_response = "Error processing response: " + str(e)
+
+    return first_line_response
+
+
+iface = gr.ChatInterface(
     fn=get_model_response,
-    inputs=gr.Textbox(),
-    outputs=gr.Textbox(),
-    live=False,
+    #inputs=gr.Textbox(),
+    #outputs=gr.Textbox(),
     title="CNVRG CLI2 Chatbot",
     description="Enter your coding-related query to get responses!",
 )
